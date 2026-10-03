@@ -1,1 +1,300 @@
-<!DOCTYPE html><html><head><title>My New Project</title></head><body><h1>Hello World from My New Project!</h1></body></html>
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaTask Workspace - Quản Lý Công Việc & Dự Án Bài Tập</title>
+  <meta name="description" content="NovaTask Workspace là ứng dụng web quản lý dự án, bài tập cá nhân hiện đại với bảng Kanban, Pomodoro timer và báo cáo năng suất.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Ambient Glow Effects -->
+  <div class="bg-glow">
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+  </div>
+
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="brand-icon">⚡</div>
+          <span class="brand-title">NovaTask</span>
+        </div>
+
+        <nav>
+          <ul class="nav-menu">
+            <li>
+              <a href="#" class="nav-item active" data-view="dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+                <span>Tổng quan</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-item" data-view="kanban">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M8 7v10"/><path d="M12 7v6"/><path d="M16 7v8"/></svg>
+                <span>Bảng Kanban</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-item" data-view="timer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Pomodoro Focus</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-item" data-view="notes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span>Ghi chú bài tập</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="sidebar-footer" style="border-top: 1px solid var(--glass-border); padding-top: 1rem;">
+        <button id="exportDataBtn" class="btn-icon" style="width:100%; border-radius: var(--radius-md); font-weight:600; font-size:0.85rem;" title="Xuất dữ liệu nộp bài">
+          📦 Xuất bài tập (JSON)
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="search-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="taskSearchInput" placeholder="Tìm kiếm bài tập, danh mục...">
+        </div>
+
+        <div class="header-actions">
+          <button id="themeToggleBtn" class="btn-icon" title="Chuyển chế độ sáng/tối"></button>
+          <button id="openAddTaskBtn" class="btn-primary">
+            <span>+ Thêm bài tập</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- View Body -->
+      <main class="content-body">
+
+        <!-- VIEW 1: DASHBOARD OVERVIEW -->
+        <section id="view-dashboard" class="view-section active">
+          <div class="page-title-box">
+            <div>
+              <h1>Báo Cáo Tiến Độ & Năng Suất</h1>
+              <p>Tổng quan danh mục bài tập và hiệu suất hoàn thành công việc.</p>
+            </div>
+          </div>
+
+          <!-- Stats Cards Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <span>Tổng bài tập</span>
+                <div class="stat-icon" style="background:var(--accent-light); color:var(--accent-primary)">📚</div>
+              </div>
+              <div class="stat-value" id="statTotalTasks">0</div>
+              <div class="stat-sub">Các mục trong danh sách</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span>Đã hoàn thành</span>
+                <div class="stat-icon" style="background:var(--accent-emerald-light); color:var(--accent-emerald)">✅</div>
+              </div>
+              <div class="stat-value" id="statCompletedTasks">0</div>
+              <div class="stat-sub">Đã xác nhận thành công</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span>Đang thực hiện</span>
+                <div class="stat-icon" style="background:var(--accent-amber-light); color:var(--accent-amber)">⏳</div>
+              </div>
+              <div class="stat-value" id="statPendingTasks">0</div>
+              <div class="stat-sub">Cần tập trung xử lý</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span>Tỷ lệ tiến độ</span>
+                <div class="stat-icon" style="background:rgba(6,182,212,0.15); color:var(--accent-cyan)">📈</div>
+              </div>
+              <div class="stat-value" id="statProductivityScore">0%</div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="statProgressBar"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Canvas Chart Box -->
+          <div style="background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 1.5rem; backdrop-filter: blur(12px);">
+            <h3 style="font-weight:700; font-size:1.1rem; margin-bottom: 1rem;">Biểu Đồ Năng Suất Hoàn Thành Theo Tuần</h3>
+            <canvas id="activityChart"></canvas>
+          </div>
+        </section>
+
+        <!-- VIEW 2: KANBAN BOARD -->
+        <section id="view-kanban" class="view-section">
+          <div class="page-title-box">
+            <div>
+              <h1>Bảng Quản Lý Bài Tập (Kanban)</h1>
+              <p>Theo dõi luồng công việc từ Cần làm đến Hoàn thành.</p>
+            </div>
+          </div>
+
+          <div class="kanban-grid">
+            <!-- Col 1: Todo -->
+            <div class="kanban-column">
+              <div class="column-header">
+                <div class="column-title">
+                  <span class="dot-indicator" style="background:var(--accent-rose)"></span>
+                  <span>Cần Làm (To Do)</span>
+                </div>
+                <span class="badge-count" id="count-todo">0</span>
+              </div>
+              <div class="task-list" id="col-todo"></div>
+            </div>
+
+            <!-- Col 2: In Progress -->
+            <div class="kanban-column">
+              <div class="column-header">
+                <div class="column-title">
+                  <span class="dot-indicator" style="background:var(--accent-amber)"></span>
+                  <span>Đang Làm (In Progress)</span>
+                </div>
+                <span class="badge-count" id="count-in-progress">0</span>
+              </div>
+              <div class="task-list" id="col-in-progress"></div>
+            </div>
+
+            <!-- Col 3: Review -->
+            <div class="kanban-column">
+              <div class="column-header">
+                <div class="column-title">
+                  <span class="dot-indicator" style="background:var(--accent-cyan)"></span>
+                  <span>Kiểm Thử (Review)</span>
+                </div>
+                <span class="badge-count" id="count-review">0</span>
+              </div>
+              <div class="task-list" id="col-review"></div>
+            </div>
+
+            <!-- Col 4: Completed -->
+            <div class="kanban-column">
+              <div class="column-header">
+                <div class="column-title">
+                  <span class="dot-indicator" style="background:var(--accent-emerald)"></span>
+                  <span>Đã Xong (Completed)</span>
+                </div>
+                <span class="badge-count" id="count-completed">0</span>
+              </div>
+              <div class="task-list" id="col-completed"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 3: POMODORO TIMER -->
+        <section id="view-timer" class="view-section">
+          <div class="page-title-box" style="text-align:center;">
+            <div style="margin: 0 auto;">
+              <h1>Đồng Hồ Tập Trung Pomodoro</h1>
+              <p>Tối ưu hóa khả năng tập trung bằng kỹ thuật đếm ngược 25 phút.</p>
+            </div>
+          </div>
+
+          <div class="timer-container">
+            <div class="timer-modes">
+              <button class="mode-btn active" data-mode="work">Tập trung (25p)</button>
+              <button class="mode-btn" data-mode="shortBreak">Nghỉ ngắn (5p)</button>
+              <button class="mode-btn" data-mode="longBreak">Nghỉ dài (15p)</button>
+            </div>
+
+            <div class="timer-display-wrap">
+              <svg class="timer-ring-svg" viewBox="0 0 240 240">
+                <circle class="timer-ring-bg" cx="120" cy="120" r="110"/>
+                <circle class="timer-ring-progress" id="timerRingProgress" cx="120" cy="120" r="110"/>
+              </svg>
+              <div class="timer-digits" id="timerDigits">25:00</div>
+            </div>
+
+            <div class="timer-controls">
+              <button id="startTimerBtn" class="btn-primary" style="padding: 0.75rem 2rem; font-size:1rem;">Bắt đầu</button>
+              <button id="resetTimerBtn" class="btn-icon" style="width:48px; height:48px;" title="Đặt lại">🔄</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 4: QUICK NOTES -->
+        <section id="view-notes" class="view-section">
+          <div class="page-title-box">
+            <div>
+              <h1>Ghi Chú & Ý Tưởng Bài Tập</h1>
+              <p>Lưu trữ nhanh các ghi chú quan trọng và ý tưởng phát triển.</p>
+            </div>
+            <button id="addNoteBtn" class="btn-primary">+ Tạo Ghi Chú</button>
+          </div>
+
+          <div class="notes-grid" id="notesContainer"></div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Add Task Modal Window -->
+  <div class="modal-overlay" id="addTaskModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Thêm Bài Tập / Công Việc Mới</h2>
+        <button class="btn-icon" id="closeModalBtn">✕</button>
+      </div>
+      <form id="addTaskForm">
+        <div class="form-group">
+          <label class="form-label" for="taskTitleInput">Tên bài tập / Công việc *</label>
+          <input type="text" id="taskTitleInput" class="form-input" required placeholder="Ví dụ: Thiết kế giao diện HTML/CSS">
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label class="form-label" for="taskCategoryInput">Phân loại</label>
+            <input type="text" id="taskCategoryInput" class="form-input" value="Lập trình Web">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="taskPriorityInput">Độ ưu tiên</label>
+            <select id="taskPriorityInput" class="form-select">
+              <option value="low">Thấp (Low)</option>
+              <option value="medium" selected>Trung bình (Medium)</option>
+              <option value="high">Cao (High)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="taskDescInput">Mô tả nội dung</label>
+          <textarea id="taskDescInput" class="form-textarea" rows="3" placeholder="Ghi chú chi tiết yêu cầu bài tập..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding: 0.85rem;">
+          Lưu Bài Tập
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
